@@ -10,13 +10,13 @@ import java.net.Socket;
 public class RuletkaServer {
     static int port = 666;
     public static void main(String[] args) {
-        try {
-            ServerSocket server = new ServerSocket(port);
-            Socket client = server.accept();
-            PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
+        try(ServerSocket server = new ServerSocket(port)) {
             System.out.println("Server listening on port " + port);
+            while(true) {
+                Socket client = server.accept();
+                System.out.println("[INFO] New client connected from: " + client.getInetAddress());
+                new Thread(new ClientHandling(client)).start();
+            }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
