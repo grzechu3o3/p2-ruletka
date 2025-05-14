@@ -15,6 +15,8 @@ public class RuletkaServer {
             Socket client = server.accept();
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+            System.out.println("Server listening on port " + port);
         } catch (IOException ex) {
             ex.printStackTrace();
         }

@@ -5,20 +5,22 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class RuletkaClient {
-    public static void main(String[] args) throws IOException {
-        String host = "127.0.0.1";
-        int port = 666;
+        private Socket s = null;
+        private DataInputStream in = null;
+        private DataOutputStream out = null;
 
-        try {
-            Socket client = new Socket(host, port);
+        public RuletkaClient(String addr, int port) {
+            try {
+                s = new Socket(addr, port);
+                System.out.println("Connected!");
 
-            InputStream in = client.getInputStream();
-
-            OutputStream out = client.getOutputStream();
-
-
-        } catch (UnknownHostException e) {
-            System.err.println("Unknown host: " + host);
+                in = new DataInputStream(System.in);
+                out = new DataOutputStream(s.getOutputStream());
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+                System.exit(1);
+            }
         }
-    }
 }
+
+
