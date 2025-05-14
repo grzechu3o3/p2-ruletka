@@ -23,6 +23,12 @@ public class RuletkaClient {
 
             while((serverMsg = in.readLine()) != null) {
                 System.out.println("[SERVER]: " + serverMsg);
+                userInput = userIn.readLine();
+                out.println(userInput);
+
+                if(userInput.equalsIgnoreCase("exit")) {
+                    System.exit(0);
+                }
             }
 
         } catch (IOException e) {

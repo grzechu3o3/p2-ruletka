@@ -7,34 +7,49 @@ import java.io.PrintWriter;
 import java.net.Socket;
 
 public class ClientHandling implements Runnable {
-    Socket client = null;
+    private Socket client = null;
+    private BufferedReader in;
+    private PrintWriter out;
+    private RuletkaProtocol protocol;
 
     public ClientHandling(Socket client) {
         this.client = client;
+        this.protocol = new RuletkaProtocol();
     }
 
     @Override
     public void run() {
-        try (
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                PrintWriter out = new PrintWriter(client.getOutputStream(), true);
-        ) {
-            RuletkaProtocol protokol = new RuletkaProtocol();
-            String input, output;
+        try {
+            in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+            out = new PrintWriter(client.getOutputStream(), true);
 
-            output = protokol.processInput(null);
-            out.println(output);
+            String clientIn, serverMsg;
 
-            while((input = in.readLine()) != null) {
-                output = protokol.processInput(input);
-                out.println(output);
+            serverMsg = protocol.processInput(null);
+            out.println(serverMsg);
+
+            while((clientIn = in.readLine()) != null) {
+                serverMsg = protocol.processInput(clientIn);
+                out.println(serverMsg);
+
+                if(clientIn.equalsIgnoreCase("exit")) {
+                    out.println("Rozłączam!");
+                    break;
+                }
+
+                if (serverMsg.equals("Koniec rundy")) {
+                    break;
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                client.close();
                 System.out.println("[INFO] Client disconnected from "+client.getInetAddress());
+                if(client != null && !client.isClosed()) client.close();
+                if(in != null)  in.close();
+                if(out != null) out.close();
             } catch (IOException e) {e.printStackTrace();}
         }
     }

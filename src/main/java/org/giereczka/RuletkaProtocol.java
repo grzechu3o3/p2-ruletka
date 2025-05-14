@@ -10,7 +10,7 @@ public class RuletkaProtocol {
 
     private int state = HELLO;
     String nick = null;
-    int playerBet = -1;
+    int playerBet= 37;
 
     public String processInput(String theInput) {
         String theOutput = "";
@@ -18,11 +18,14 @@ public class RuletkaProtocol {
             theOutput = "Witaj w ruletce! Podaj nazwę gracza: ";
             state = WAITING;
         } else if(state == WAITING) {
-            theOutput = "Witaj !"+nick +"!";
+            nick = theInput;
+            System.out.println("[DEBUG] "+theInput);
+            theOutput = "Witaj "+nick +"!";
             state = BET;
         } else if(state == BET) {
             theOutput = "Podaj zakład: liczba od 0 do 36: ";
-            if(playerBet < 0 || playerBet > 36) {
+
+            if(playerBet >= 0 && playerBet <= 36) {
                 theOutput = "Zakład przyjęty!";
                 state = ROLL;
             } else {
