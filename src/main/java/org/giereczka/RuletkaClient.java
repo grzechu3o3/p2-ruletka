@@ -1,14 +1,16 @@
 package org.giereczka;
 
+import java.awt.*;
+import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
+import javax.swing.*;
 
 public class RuletkaClient {
     private Socket s = null;
     private BufferedReader in = null;
     private PrintWriter out = null;
     private BufferedReader userIn = null;
-
 
     public RuletkaClient(String addr, int port) {
         try {
@@ -19,21 +21,37 @@ public class RuletkaClient {
             out = new PrintWriter(s.getOutputStream(), true);
             userIn = new BufferedReader(new InputStreamReader(System.in));
 
-            String serverMsg, userInput;
+            new Thread(() -> {
+                try {
+                    String serverMsg;
+                    while((serverMsg = in.readLine()) != null) {
+                        System.out.println("[CLIENT]: " + serverMsg);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).start();
 
-            while((serverMsg = in.readLine()) != null) {
-                System.out.println("[SERVER]: " + serverMsg);
-                userInput = userIn.readLine();
+            String userInput;
+            while((userInput = userIn.readLine()) != null) {
                 out.println(userInput);
 
-                if(userInput.equalsIgnoreCase("exit")) {
-                    System.exit(0);
-                }
+                if(userInput.equalsIgnoreCase("exit")) break;
             }
 
         } catch (IOException e) {
             System.out.println(e.getMessage());
             System.exit(1);
+        } finally {
+            try {
+                if (s!=null) s.close();
+                if(in!=null) in.close();
+                if(out!=null) out.close();
+                if(userIn!=null) userIn.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            System.exit(0);
         }
     }
 
