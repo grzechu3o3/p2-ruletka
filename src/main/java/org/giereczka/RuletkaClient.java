@@ -1,10 +1,7 @@
 package org.giereczka;
 
-import java.awt.*;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.Socket;
-import javax.swing.*;
 
 public class RuletkaClient {
     private Socket s = null;
@@ -21,7 +18,7 @@ public class RuletkaClient {
             out = new PrintWriter(s.getOutputStream(), true);
             userIn = new BufferedReader(new InputStreamReader(System.in));
 
-            new Thread(() -> {
+            Thread serverHandling = new Thread(() -> {
                 try {
                     String serverMsg;
                     while((serverMsg = in.readLine()) != null) {
@@ -30,7 +27,9 @@ public class RuletkaClient {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }).start();
+            });
+
+            serverHandling.start();
 
             String userInput;
             while((userInput = userIn.readLine()) != null) {
@@ -44,11 +43,12 @@ public class RuletkaClient {
             System.exit(1);
         } finally {
             try {
+                Thread.sleep(500);
                 if (s!=null) s.close();
                 if(in!=null) in.close();
                 if(out!=null) out.close();
                 if(userIn!=null) userIn.close();
-            } catch (IOException e) {
+            } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
             }
             System.exit(0);
