@@ -20,43 +20,41 @@ public class RuletkaProtocol {
 
         switch(gameState) {
             case WAITING_FOR_NAME:
-                if(command.equals("NICK")) {
+                if(command.equalsIgnoreCase("N")) {
                     nickname = parts[1].trim();
                     gameState = WAITING_FOR_BET;
-                    return "[INFO] Witaj " + nickname + " | Podaj zakład w formie BET|liczba|kwota";
-                } else {
+                    return "[INFO] Witaj " + nickname + " | Podaj zakład w formie B|liczba|kwota";
+                } else if (!command.equalsIgnoreCase("N") && nickname == null) {
                     return "[BŁĄD] Nie podano nicku!";
                 }
             case WAITING_FOR_BET:
-                if(command.equals("BET")) {
-                    if(parts.length < 3) {return "[BŁĄD] Nieprawidłowa forma zakładu, Format: BET|liczba|kwota";}
+                if(command.equalsIgnoreCase("B")) {
+                    if(parts.length < 3) {return "[BŁĄD] Nieprawidłowa forma zakładu, Format: B|liczba|kwota";}
                     try {
                         int number = Integer.parseInt(parts[1]);
                         int amount = Integer.parseInt(parts[2]);
 
                         if(number < 0 || number > 36) {
-                            return "BŁĄD|Zakład musi być od 0 do 36!";
+                            return "[BŁĄD] Zakład musi być od 0 do 36!";
                         }
                         if(amount <=0) {
-                            return "BŁĄD|Kwota zakładu musi być większa od 0";
+                            return "[BŁĄD] Kwota zakładu musi być większa od 0";
                         }
 
                         gameState = GAME_IN_PROGRESS;
-                        return "INFO|Postawiono " + amount + " na " + number;
+                        return "[INFO] Postawiono " + amount + " na " + number;
                     } catch (NumberFormatException e) {
-                        return "ERROR|Nieprawidłowy format danych, muszą być liczbami całkowitymi!";
+                        return "[BŁĄD] Nieprawidłowy format danych, muszą być liczbami całkowitymi!";
                     }
                 } else if(command.equalsIgnoreCase("EXIT")) {
                     return "[INFO] Dziękuje za grę";
                 }
             case GAME_IN_PROGRESS:
-                if(command.equals("CHAT")) {
-                    return "CHAT|" + nickname + "|" + parts[1];
-                } else {
-                    return "INFO|Gra w toku, czekaj na wynik";
+                if(command != null && !command.toLowerCase().startsWith("c")) {
+                    return "[INFO] Gra w toku, czekaj na wynik";
                 }
             default:
-                return "ERROR|Nieznany stan gry! Spróbuj połączyć się ponownie.";
+                return "[BŁĄD] Nieznany stan gry! Spróbuj połączyć się ponownie.";
         }
     }
 

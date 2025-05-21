@@ -71,11 +71,11 @@ public class RuletkaServer {
             p.currentBet = null;
             if(p.protocol!=null) p.protocol.resetGame();
         }
-        sendMsg("[NEW_ROUND] "+(ROUND_TIME/1000) + " Nowa runda, masz"+(ROUND_TIME/1000) + "s na obstawienie");
+        sendMsg("[NEW_ROUND] Nowa runda, masz "+(ROUND_TIME/1000) + "s na obstawienie");
         gameStarted = false;
     }
 
-    private void sendMsg(String msg) {
+    public void sendMsg(String msg) {
         synchronized (players) {
             for(Player p : players) {
                 p.out.println(msg);

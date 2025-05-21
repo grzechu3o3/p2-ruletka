@@ -25,8 +25,8 @@ public class ClientHandling implements Runnable {
             in = new BufferedReader(new InputStreamReader(client.getInputStream()));
             out = new PrintWriter(client.getOutputStream(), true);
 
-            out.println("Witaj w ruletce! Podaj nick: (NICK|twojnick");
-            out.println("[TIME]"+server.getTime() + "s do następnej rundy");
+            out.println("Witaj w ruletce! Podaj nick: (N|twojnick)");
+            out.println("[TIME] "+server.getTime() + "s do następnej rundy");
 
             String clientIn;
 
@@ -35,16 +35,19 @@ public class ClientHandling implements Runnable {
                     out.println("Rozłączam!");
                     break;
                 }
-
-                if(clientIn.startsWith("NICK") && player == null) {
+                if(clientIn.toLowerCase().startsWith("c|")) {
+                    String msg = clientIn.split("\\|")[1];
+                    server.sendMsg("[CHAT] " + player.nick + ":" + msg);
+                }
+                if(clientIn.toUpperCase().startsWith("N") && player == null) {
                     String nickname = clientIn.split("\\|")[1];
                     System.out.println("[DEBUG] New player: " + nickname);
 
                     player = new Player(nickname, out, protocol);
                     server.register(player);
 
-                    out.println("[INFO] Witaj " + nickname+ "! Masz" + server.getTime() + "s na obstawienie. Użyj BET|liczba|kwota");
-                } else if(clientIn.startsWith("BET") && player != null) {
+                    out.println("[INFO] Witaj " + nickname+ "! Masz" + server.getTime() + "s na obstawienie. Użyj B|liczba|kwota");
+                } else if(clientIn.toLowerCase().startsWith("b") && player != null) {
                     if(server.isGameStarted()) {
                         out.println("[ERROR] Gra w toku! Poczekaj na nową rundę!");
                     } else {
@@ -61,7 +64,7 @@ public class ClientHandling implements Runnable {
                                 out.println("[INFO] Postawiono " + amount + " na " + number + ". Czekaj na wynik");
                             }
                         } catch (Exception e) {
-                            out.println("[ERROR] Nieprawidłowy zakład! Format: BET|liczba|kwota");
+                            out.println("[ERROR] Nieprawidłowy zakład! Format: B|liczba|kwota");
                         }
                     }
                 } else if (clientIn.equals("TIME")) {

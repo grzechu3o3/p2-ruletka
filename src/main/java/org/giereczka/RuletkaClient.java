@@ -34,7 +34,6 @@ public class RuletkaClient {
             String userInput;
             while((userInput = userIn.readLine()) != null) {
                 out.println(userInput);
-
                 if(userInput.equalsIgnoreCase("exit")) break;
             }
 
