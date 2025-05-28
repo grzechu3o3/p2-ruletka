@@ -54,8 +54,8 @@ public class RuletkaClient {
         }
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         new RuletkaClient("127.0.0.1", 666);
-    }
+    }*/
 }
 
