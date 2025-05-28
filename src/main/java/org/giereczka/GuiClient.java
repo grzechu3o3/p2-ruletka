@@ -18,6 +18,7 @@ public class GuiClient extends JFrame {
     private JTextField betField;
     private JTextArea result;
     private JTextField numField;
+    private JLabel timer, win;
 
 
     public GuiClient() {
@@ -38,12 +39,16 @@ public class GuiClient extends JFrame {
         inputs.add(numField);
         inputs.add(play);
 
-        result = new JTextArea();
+        result = new JTextArea(4,40);
         result.setEditable(false);
 
+        JPanel info = new JPanel(new GridLayout(1,2));
+        info.add(timer = new JLabel("Czas do końca rundy: -- s"));
+        info.add(win = new JLabel("Wygrane: 0"));
 
         add(inputs, BorderLayout.SOUTH);
-        add(new JScrollPane(result), BorderLayout.NORTH);
+        add(new JScrollPane(result), BorderLayout.CENTER);
+        add(info, BorderLayout.EAST);
 
 
 
@@ -67,6 +72,7 @@ public class GuiClient extends JFrame {
                 error("Błędny nick!");
                 System.exit(1);
             }
+            new Thread(this::listen).start();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,7 +95,27 @@ public class GuiClient extends JFrame {
         } catch (IOException e) {
             error("Błąd komunikacji z serwerem!");
         }
+    }
+    private void listen() {
+        try {
+            String l;
+            while((l = in.readLine()) != null) {
+                final String msg = l;
+                SwingUtilities.invokeLater(()->processMsg(msg));
+            }
+        } catch (IOException e) {
+            error("Brak połączenia z serwerem!");
+        }
+    }
 
+    private void processMsg(String msg) {
+        result.append(msg+"\n");
+        if(msg.startsWith("[WIN]")) {
+            win.setText("Wygrana");
+        }
+        if(msg.startsWith("[LOSE]")) {
+            win.setText("Przegrałeś!");
+        }
     }
 
     private void error(String msg) {
