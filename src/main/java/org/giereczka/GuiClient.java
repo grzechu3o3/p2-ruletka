@@ -1,13 +1,11 @@
 package org.giereczka;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +23,7 @@ public class GuiClient extends JFrame {
 
 
     public GuiClient() {
+        // <editor-fold desc="Elementy gui">
         setTitle("Klient Ruletki");
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(1280, 720);
@@ -36,11 +35,13 @@ public class GuiClient extends JFrame {
         play.addActionListener(e-> bet());
 
         JPanel inputs = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
         inputs.add(new JLabel("Bet(w $):"));
         inputs.add(betField);
         inputs.add(new JLabel("Liczba: "));
         inputs.add(numField);
         inputs.add(play);
+
 
         result = new JTextArea(4,40);
         result.setEditable(false);
@@ -79,8 +80,10 @@ public class GuiClient extends JFrame {
         add(info, BorderLayout.EAST);
         add(chat, BorderLayout.WEST);
 
+        // </editor-fold>
 
         try {
+            // <editor-fold desc="Połączenie z serwerem">
             s = new Socket(ip, port);
             out = new PrintWriter(s.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -100,7 +103,7 @@ public class GuiClient extends JFrame {
                 System.exit(1);
             }
             new Thread(this::listen).start();
-
+            // </editor-fold>
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -165,6 +168,24 @@ public class GuiClient extends JFrame {
            try {
                int remainingTime = Integer.parseInt(time);
                timer.setText("Czas do końca rundy: " + remainingTime + "s");
+               if(remainingTime == 10) {
+                   try {
+                       InputStream audioSrc = GuiClient.class.getResourceAsStream("/spin.wav");
+                       if (audioSrc == null) {
+                           throw new IllegalArgumentException("Nie znaleziono pliku dzwiek.wav w resources!");
+                       }
+
+                       AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioSrc);
+
+                       Clip clip = AudioSystem.getClip();
+                       clip.open(audioIn);
+                       clip.start();
+
+                   } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+                       e.printStackTrace();
+                   }
+
+               }
            } catch (NumberFormatException ignore) {}
         } else if(msg.startsWith("[CHAT]")) {
            String content = msg.substring("[CHAT]".length());
