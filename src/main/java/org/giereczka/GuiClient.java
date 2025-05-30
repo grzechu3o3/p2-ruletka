@@ -52,6 +52,9 @@ public class GuiClient extends JFrame {
         chatArea = new JTextArea();
         chatArea.setEditable(false);
         chatArea.setFocusable(false);
+        chatArea.setLineWrap(true);
+        chatArea.setWrapStyleWord(true);
+        chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
 
         chat.add(new JScrollPane(chatArea), BorderLayout.CENTER);
 
