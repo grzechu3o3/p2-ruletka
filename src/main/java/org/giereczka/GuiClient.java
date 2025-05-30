@@ -168,7 +168,7 @@ public class GuiClient extends JFrame {
            try {
                int remainingTime = Integer.parseInt(time);
                timer.setText("Czas do końca rundy: " + remainingTime + "s");
-               if(remainingTime == 10) {
+               if(remainingTime == 9) {
                    try {
                        InputStream audioSrc = GuiClient.class.getResourceAsStream("/spin.wav");
                        if (audioSrc == null) {
