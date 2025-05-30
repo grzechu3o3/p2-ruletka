@@ -2,6 +2,8 @@ package org.giereczka;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +26,7 @@ public class GuiClient extends JFrame {
 
     public GuiClient() {
         setTitle("Klient Ruletki");
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(1280, 720);
         setLayout(new BorderLayout());
 
@@ -42,6 +44,7 @@ public class GuiClient extends JFrame {
 
         result = new JTextArea(4,40);
         result.setEditable(false);
+        result.setFocusable(false);
 
         JPanel info = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
         info.add(timer = new JLabel("Czas do końca rundy: -- s"));
@@ -54,7 +57,9 @@ public class GuiClient extends JFrame {
         chatArea.setFocusable(false);
         chatArea.setLineWrap(true);
         chatArea.setWrapStyleWord(true);
+
         chatArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        result.setFont(new Font("Arial", Font.PLAIN, 12));
 
         chat.add(new JScrollPane(chatArea), BorderLayout.CENTER);
 
@@ -70,6 +75,7 @@ public class GuiClient extends JFrame {
 
         add(inputs, BorderLayout.SOUTH);
         add(new JScrollPane(result), BorderLayout.CENTER);
+        result.setBorder(BorderFactory.createTitledBorder("Result"));
         add(info, BorderLayout.EAST);
         add(chat, BorderLayout.WEST);
 
@@ -98,6 +104,20 @@ public class GuiClient extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                try {
+                    if (s!=null) s.close();
+                    if(in!=null) in.close();
+                    if(out!=null) out.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                System.exit(0);
+            }
+        });
     }
 
     private void bet() {
