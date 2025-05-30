@@ -49,11 +49,11 @@ public class GuiClient extends JFrame {
 
         JPanel chat = new JPanel(new BorderLayout());
         chat.setBorder(BorderFactory.createTitledBorder("Chat"));
-        chatArea = new JTextArea(5,20);
+        chatArea = new JTextArea();
         chatArea.setEditable(false);
-        chatArea.setLineWrap(true);
-        chatArea.setWrapStyleWord(true);
-        chat.add(chatArea, BorderLayout.CENTER);
+        chatArea.setFocusable(false);
+
+        chat.add(new JScrollPane(chatArea), BorderLayout.CENTER);
 
         chatInput = new JTextField(20);
         chat.add(chatInput, BorderLayout.NORTH);
@@ -62,6 +62,7 @@ public class GuiClient extends JFrame {
         chat.add(sendButton, BorderLayout.SOUTH);
         sendButton.addActionListener(e->{
             out.println("c|"+chatInput.getText());
+            chatInput.setText("");
         });
 
         add(inputs, BorderLayout.SOUTH);
@@ -143,8 +144,10 @@ public class GuiClient extends JFrame {
                timer.setText("Czas do końca rundy: " + remainingTime + "s");
            } catch (NumberFormatException ignore) {}
         } else if(msg.startsWith("[CHAT]")) {
-            String message = msg.replaceAll("\\[CHAT\\]*", "");
-            chatArea.append(message+"\n");
+           String content = msg.substring("[CHAT]".length());
+           String parts[] = content.split(":", 2);
+           chatArea.append(parts[0].toUpperCase() + ": " + parts[1] + "\n");
+           return;
         }
         for(String prefix : ignored_prefixList) {
             if(msg.startsWith(prefix)) {
