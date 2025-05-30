@@ -9,10 +9,11 @@ public class RuletkaServer {
     static int port = 666;
     static List<Player> players = Collections.synchronizedList(new ArrayList<>());
     private boolean gameStarted = false;
-    private static final int ROUND_TIME = 30 * 1000;
+    private static final int ROUND_TIME = 30 * 1000; // czas w sekundach
     private Timer gameTime;
     private Random random = new Random();
     private long lastGame = 0;
+    private Timer roundTimer;
 
     public void register(Player player) {
         players.add(player);
@@ -23,6 +24,7 @@ public class RuletkaServer {
         ServerSocket server = new ServerSocket(port);
         System.out.println("[INFO] Server listening on port " + port);
 
+        timerBroadcast();
         startGame();
 
         while(true) {
@@ -72,6 +74,7 @@ public class RuletkaServer {
             if(p.protocol!=null) p.protocol.resetGame();
         }
         sendMsg("[NEW_ROUND] Nowa runda, masz "+(ROUND_TIME/1000) + "s na obstawienie");
+        lastGame = System.currentTimeMillis();
         gameStarted = false;
     }
 
@@ -93,6 +96,20 @@ public class RuletkaServer {
         long timeRemaining = (ROUND_TIME - timeElapsed) / 1000;
         return String.valueOf(Math.max(0, timeRemaining));
     }
+
+    private void timerBroadcast() {
+        if (roundTimer != null) return;
+
+        roundTimer = new Timer();
+        roundTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                String time = "[TIMER] " + getTime();
+                sendMsg(time);
+            }
+        }, 0, 1000);
+    }
+
 
     public static void main(String[] args) throws IOException {
         new RuletkaServer().start();

@@ -51,7 +51,7 @@ public class RuletkaProtocol {
                 }
             case GAME_IN_PROGRESS:
                 if (command != null && !command.toLowerCase().startsWith("c")) {
-                    return "[INFO] Gra w toku, czekaj na wynik";
+                    return "[INFO] Gra w toku, czekaj na wynik.";
                 }
             default:
                 if(command != null) {

@@ -46,7 +46,7 @@ public class ClientHandling implements Runnable {
                     player = new Player(nickname, out, protocol);
                     server.register(player);
 
-                    out.println("[INFO] Witaj " + nickname+ "! Masz" + server.getTime() + "s na obstawienie. Użyj B|liczba|kwota");
+                    out.println("[INFO] Witaj " + nickname+ "! Masz " + server.getTime() + "s na obstawienie. Użyj B|liczba|kwota");
                 } else if(clientIn.toLowerCase().startsWith("b") && player != null) {
                     if(server.isGameStarted()) {
                         out.println("[ERROR] Gra w toku! Poczekaj na nową rundę!");
