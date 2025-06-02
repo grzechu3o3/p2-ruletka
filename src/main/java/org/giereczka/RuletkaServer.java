@@ -66,7 +66,7 @@ public class RuletkaServer {
         for(Player p : players) {
             if(p.currentBet != null && p.currentBet.equalsIgnoreCase(result)) {
                 p.totalWon++;
-                p.out.println("[WIN] Wygrałeś!");
+                p.out.println("[WIN] Wygrałeś! ("+p.totalWon+")");
             } else if(p.currentBet != null) {
                 p.out.println("[LOSE] Niestety przegrałeś!");
             }

@@ -17,9 +17,10 @@ public class GuiClient extends JFrame {
     PrintWriter out;
     BufferedReader in;
     private JTextField betField, numField, chatInput;
-    private JButton sendButton;
+    private final JButton sendButton, play;
     private JTextArea result, chatArea;
     private JLabel timer, win;
+    private boolean spinsound = false;
 
 
     public GuiClient() {
@@ -28,11 +29,15 @@ public class GuiClient extends JFrame {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setSize(1280, 720);
         setLayout(new BorderLayout());
+        setLocationRelativeTo(null);
 
         betField = new JTextField(6);
         numField = new JTextField(6);
-        JButton play = new JButton("Zagraj");
-        play.addActionListener(e-> bet());
+        play = new JButton("Zagraj");
+        play.addActionListener(e-> {
+            updateBet(false);
+            bet();
+        });
 
         JPanel inputs = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
@@ -69,6 +74,7 @@ public class GuiClient extends JFrame {
 
         sendButton = new JButton("Wyślij");
         chat.add(sendButton, BorderLayout.SOUTH);
+
         sendButton.addActionListener(e->{
             out.println("c|"+chatInput.getText());
             chatInput.setText("");
@@ -79,6 +85,7 @@ public class GuiClient extends JFrame {
         result.setBorder(BorderFactory.createTitledBorder("Result"));
         add(info, BorderLayout.EAST);
         add(chat, BorderLayout.WEST);
+
 
         // </editor-fold>
 
@@ -92,7 +99,7 @@ public class GuiClient extends JFrame {
             result.append(sMsg + "\n");
 
             String nick = JOptionPane.showInputDialog(this, "Podaj nick:", "", JOptionPane.PLAIN_MESSAGE);
-            if (nick != null && !nick.isEmpty()) {
+            if (nick != null && !nick.isEmpty() && !nick.contains("|") && !nick.contains(":")) {
                 out.println("n|"+nick);
                 String res = in.readLine();
                 result.append(res+"\n");
@@ -112,13 +119,12 @@ public class GuiClient extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    if (s!=null) s.close();
-                    if(in!=null) in.close();
-                    if(out!=null) out.close();
+                    if (s!=null && !s.isClosed()) s.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
+                } finally {
+                    System.exit(0);
                 }
-                System.exit(0);
             }
         });
     }
@@ -158,9 +164,8 @@ public class GuiClient extends JFrame {
     }
 
     private static final List<String> ignored_prefixList = Arrays.asList(
-            "[TIMER]", "[RESULT]", "[CHAT", "c"
+            "[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]"
     );
-
 
     private void processMsg(String msg) {
         if(msg.startsWith("[TIMER]")) {
@@ -168,30 +173,19 @@ public class GuiClient extends JFrame {
            try {
                int remainingTime = Integer.parseInt(time);
                timer.setText("Czas do końca rundy: " + remainingTime + "s");
-               if(remainingTime == 9) {
-                   try {
-                       InputStream audioSrc = GuiClient.class.getResourceAsStream("/spin.wav");
-                       if (audioSrc == null) {
-                           throw new IllegalArgumentException("Nie znaleziono pliku dzwiek.wav w resources!");
-                       }
-
-                       AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioSrc);
-
-                       Clip clip = AudioSystem.getClip();
-                       clip.open(audioIn);
-                       clip.start();
-
-                   } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
-                       e.printStackTrace();
-                   }
-
+               if (remainingTime == 9 && !spinsound) {
+                   playSound("/spin.wav");
+                    spinsound = true;
                }
+               if (remainingTime>9) spinsound = false;
            } catch (NumberFormatException ignore) {}
         } else if(msg.startsWith("[CHAT]")) {
            String content = msg.substring("[CHAT]".length());
            String parts[] = content.split(":", 2);
            chatArea.append(parts[0].toUpperCase() + ": " + parts[1] + "\n");
            return;
+        } else if(msg.startsWith("[NEW_ROUND]")) {
+            updateBet(true);
         }
         for(String prefix : ignored_prefixList) {
             if(msg.startsWith(prefix)) {
@@ -205,6 +199,32 @@ public class GuiClient extends JFrame {
         if(msg.startsWith("[LOSE]")) {
             win.setText("Przegrałeś :(");
         }
+    }
+
+    private void playSound(String soundPath) {
+        try {
+            InputStream audioSrc = GuiClient.class.getResourceAsStream(soundPath);
+            if (audioSrc == null) {
+                throw new IllegalArgumentException("Nie znaleziono pliku dzwiek.wav w resources!");
+            }
+
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioSrc);
+
+            Clip clip = AudioSystem.getClip();
+            clip.open(audioIn);
+            clip.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private void updateBet(boolean state) {
+        SwingUtilities.invokeLater(()->{
+            play.setEnabled(state);
+            play.revalidate();
+            play.repaint();
+        });
     }
 
     private void error(String msg) {
