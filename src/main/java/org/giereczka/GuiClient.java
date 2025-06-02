@@ -13,7 +13,6 @@ import java.util.List;
 public class GuiClient extends JFrame {
     static String ip = "localhost";
     static int port = 666;
-    private Socket s;
     PrintWriter out;
     BufferedReader in;
     private JTextField betField, numField;
@@ -21,9 +20,9 @@ public class GuiClient extends JFrame {
     private final JButton play;
     private JTextArea result;
     private JLabel timer, win;
-    private boolean spinsound = false;
     private ChatPanel chatPanel;
-
+    ConnectionHandler conn;
+    Soundplayer spin = new Soundplayer("/spin.wav");
 
     public GuiClient() {
         // <editor-fold desc="Elementy gui">
@@ -69,27 +68,23 @@ public class GuiClient extends JFrame {
         // </editor-fold>
 
         try {
-            // <editor-fold desc="Połączenie z serwerem">
-            s = new Socket(ip, port);
-            out = new PrintWriter(s.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+            conn = new ConnectionHandler(ip, port);
+            out = conn.getOut();
+            in = conn.getIn();
 
-            String sMsg = in.readLine();
-            result.append(sMsg + "\n");
+            String welcome = conn.read();
+            result.append(welcome + "\n");
 
             String nick = JOptionPane.showInputDialog(this, "Podaj nick:", "", JOptionPane.PLAIN_MESSAGE);
-            if (nick != null && !nick.isEmpty() && !nick.contains("|") && !nick.contains(":")) {
-                out.println("n|"+nick);
-                String res = in.readLine();
-                result.append(res+"\n");
-                res = in.readLine();
-                result.append(res+"\n");
+            if(isValidNick(nick)) {
+                out.println("n|" + nick);
+                result.append(conn.read() + "\n");
+                result.append(conn.read() + "\n");
             } else {
-                error("Błędny nick!");
+                error("Niepoprawny nick!");
                 System.exit(1);
             }
             new Thread(this::listen).start();
-            // </editor-fold>
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -103,7 +98,7 @@ public class GuiClient extends JFrame {
             @Override
             public void windowClosing(WindowEvent e) {
                 try {
-                    if (s!=null && !s.isClosed()) s.close();
+                    if (conn!=null && !conn.isClosed()) conn.close();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 } finally {
@@ -113,11 +108,15 @@ public class GuiClient extends JFrame {
         });
     }
 
+    private boolean isValidNick(String nick) {
+        return nick != null && !nick.isEmpty() && !nick.contains("|") && !nick.contains(":");
+    }
+
     private void listen() {
         try {
             win.setText("Wygrane: 0");
             String l;
-            while((l = in.readLine()) != null) {
+            while((l = conn.read()) != null) {
                 final String msg = l;
                 SwingUtilities.invokeLater(()->processMsg(msg));
             }
@@ -136,11 +135,9 @@ public class GuiClient extends JFrame {
            try {
                int remainingTime = Integer.parseInt(time);
                timer.setText("Czas do końca rundy: " + remainingTime + "s");
-               if (remainingTime == 9 && !spinsound) {
-                   playSound("/spin.wav");
-                    spinsound = true;
+               if (remainingTime == 9) {
+                    spin.play();
                }
-               if (remainingTime>9) spinsound = false;
            } catch (NumberFormatException ignore) {}
         } else if(msg.startsWith("[CHAT]")) {
            String content = msg.substring("[CHAT]".length());
@@ -164,24 +161,6 @@ public class GuiClient extends JFrame {
         }
     }
 
-    private void playSound(String soundPath) {
-        try {
-            InputStream audioSrc = GuiClient.class.getResourceAsStream(soundPath);
-            if (audioSrc == null) {
-                throw new IllegalArgumentException("Nie znaleziono pliku dzwiek.wav w resources!");
-            }
-
-            AudioInputStream audioIn = AudioSystem.getAudioInputStream(audioSrc);
-
-            Clip clip = AudioSystem.getClip();
-            clip.open(audioIn);
-            clip.start();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
     private void updateBet(boolean state) {
         SwingUtilities.invokeLater(()->{
             play.setEnabled(state);
@@ -202,7 +181,7 @@ public class GuiClient extends JFrame {
                 error("Można postawić tylko na liczbę od 0 do 36!");
                 return;
             }
-            out.println("b|"+num+"|"+bet);
+            conn.send("b|"+num+"|"+bet);
             betField.setText("");
             numField.setText("");
         } catch (NumberFormatException e) {

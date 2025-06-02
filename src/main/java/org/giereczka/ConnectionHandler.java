@@ -29,6 +29,10 @@ public class ConnectionHandler {
         s.close();
     }
 
+    public boolean isClosed() {
+        return s.isClosed();
+    }
+
     public PrintWriter getOut() {
         return out;
     }
