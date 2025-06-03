@@ -1,4 +1,4 @@
-package org.giereczka;
+package org.ruletka;
 
 import java.io.*;
 import java.net.Socket;

@@ -1,4 +1,4 @@
-package org.giereczka.server;
+package org.ruletka.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;

@@ -1,4 +1,4 @@
-package org.giereczka.guiClient;
+package org.ruletka.guiClient;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,6 +21,7 @@ public class GuiClient extends JFrame {
     private ChatPanel chatPanel;
     ConnectionHandler conn;
     Soundplayer spin = new Soundplayer("/spin.wav");
+    private MessageProcessor mp;
 
     public GuiClient() {
         // <editor-fold desc="Elementy gui">
@@ -79,7 +80,7 @@ public class GuiClient extends JFrame {
             result.append(welcome + "\n");
 
             String nick = JOptionPane.showInputDialog(this, "Podaj nick:", "", JOptionPane.PLAIN_MESSAGE);
-            if(isValidNick(nick)) {
+            if(Validator.isValidNick(nick)) {
                 out.println("n|" + nick);
                 result.append(conn.read() + "\n");
                 result.append(conn.read() + "\n");
@@ -92,10 +93,10 @@ public class GuiClient extends JFrame {
             e.printStackTrace();
         }
 
-
         chatPanel = new ChatPanel(out);
         add(chatPanel, BorderLayout.WEST);
 
+        mp = new MessageProcessor(timer, win, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true));
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -111,17 +112,13 @@ public class GuiClient extends JFrame {
         });
     }
 
-    private boolean isValidNick(String nick) {
-        return nick != null && !nick.isEmpty() && !nick.contains("|") && !nick.contains(":");
-    }
-
     private void listen() {
         try {
             win.setText("Wygrane: 0");
             String l;
             while((l = conn.read()) != null) {
                 final String msg = l;
-                SwingUtilities.invokeLater(()->processMsg(msg));
+                SwingUtilities.invokeLater(()->mp.process(msg));
             }
         } catch (IOException e) {
             error("Brak połączenia z serwerem!");
@@ -131,38 +128,6 @@ public class GuiClient extends JFrame {
     private static final List<String> ignored_prefixList = Arrays.asList(
             "[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]"
     );
-
-    private void processMsg(String msg) {
-        if(msg.startsWith("[TIMER]")) {
-           String time = msg.replaceAll("[^0-9]", "");
-           try {
-               int remainingTime = Integer.parseInt(time);
-               timer.setText("Czas do końca rundy: " + remainingTime + "s");
-               if (remainingTime == 9) {
-                    spin.play();
-               }
-           } catch (NumberFormatException ignore) {}
-        } else if(msg.startsWith("[CHAT]")) {
-           String content = msg.substring("[CHAT]".length());
-           String parts[] = content.split(":", 2);
-           chatPanel.append(parts[0], parts[1]);
-           return;
-        } else if(msg.startsWith("[NEW_ROUND]")) {
-            updateBet(true);
-        }
-        for(String prefix : ignored_prefixList) {
-            if(msg.startsWith(prefix)) {
-                return;
-            }
-        }
-        result.append(msg+"\n");
-        if(msg.startsWith("[WIN]")) {
-            win.setText("Wygrana!");
-        }
-        if(msg.startsWith("[LOSE]")) {
-            win.setText("Przegrałeś :(");
-        }
-    }
 
     private void updateBet(boolean state) {
         SwingUtilities.invokeLater(()->{
@@ -175,26 +140,18 @@ public class GuiClient extends JFrame {
     public void bet() {
         String bet = betField.getText().trim();
         String num = numField.getText().trim();
-        if(bet.isEmpty() || num.isEmpty()) {
+
+        if(!Validator.isValidBet(bet,num)) {
             updateBet(true);
-            error("Nieprawidłowy zakład!");
+            error("Nieprawidłowy zakład! Liczba musi być od 0 do 36, kwota większa od zera");
             return;
         }
-        try {
-            if (Integer.parseInt(bet) < 0 || Integer.parseInt(num) > 36) {
-                updateBet(true);
-                error("Można postawić tylko na liczbę od 0 do 36!");
-                return;
-            }
-            conn.send("b|"+num+"|"+bet);
-            betField.setText("");
-            numField.setText("");
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            error("Niepoprawne dane!");
-        }
 
+        conn.send("b|"+num+"|"+bet);
+        betField.setText("");
+        numField.setText("");
     }
+
     public void error(String msg) {
         JOptionPane.showMessageDialog(null, msg, "Error", JOptionPane.ERROR_MESSAGE);
     }

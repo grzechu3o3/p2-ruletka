@@ -1,4 +1,4 @@
-package org.giereczka.guiClient;
+package org.ruletka.guiClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;

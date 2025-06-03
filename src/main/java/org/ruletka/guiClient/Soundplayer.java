@@ -1,4 +1,4 @@
-package org.giereczka.guiClient;
+package org.ruletka.guiClient;
 
 import javax.sound.sampled.*;
 import java.io.IOException;

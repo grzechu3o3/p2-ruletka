@@ -1,4 +1,4 @@
-package org.giereczka.server;
+package org.ruletka.server;
 
 public class RuletkaProtocol {
 
