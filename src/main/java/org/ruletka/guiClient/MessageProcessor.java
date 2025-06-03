@@ -32,6 +32,8 @@ public class MessageProcessor {
         else if(msg.startsWith("[LOSE]")) winLabel.setText("Przegrałeś :(");
         else if(msg.startsWith("[NEW_ROUND]")) {
             handleNewRound();
+        } else if(msg.startsWith("[RESULT]")) {
+            int winning_number = Integer.parseInt(msg.substring("[RESULT]".length()).trim());
         } else if(isIgnored(msg)) return;
         else resultArea.append(msg + "\n");
 

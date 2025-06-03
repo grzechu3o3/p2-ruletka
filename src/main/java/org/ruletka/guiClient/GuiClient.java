@@ -42,7 +42,6 @@ public class GuiClient extends JFrame {
         });
 
         JPanel inputs = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
         inputs.add(new JLabel("Zakład w $:"));
         inputs.add(betField);
         inputs.add(new JLabel("Liczba: "));
@@ -51,7 +50,6 @@ public class GuiClient extends JFrame {
         inputs.add(red);
         inputs.add(black);
         inputs.add(play);
-
 
         result = new JTextArea(4,40);
         result.setEditable(false);
@@ -63,11 +61,14 @@ public class GuiClient extends JFrame {
 
 
         result.setFont(new Font("Arial", Font.PLAIN, 12));
-
+        JPanel results = new JPanel();
+        results.setLayout(new BoxLayout(results, BoxLayout.Y_AXIS));
 
         add(inputs, BorderLayout.SOUTH);
-        add(new JScrollPane(result), BorderLayout.CENTER);
+        results.add(new JScrollPane(result));
         result.setBorder(BorderFactory.createTitledBorder("Result"));
+
+        add(results, BorderLayout.CENTER);
         add(info, BorderLayout.EAST);
         // </editor-fold>
 
@@ -125,9 +126,7 @@ public class GuiClient extends JFrame {
         }
     }
 
-    private static final List<String> ignored_prefixList = Arrays.asList(
-            "[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]"
-    );
+    private static final List<String> ignored_prefixList = Arrays.asList("[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]");
 
     private void updateBet(boolean state) {
         SwingUtilities.invokeLater(()->{
