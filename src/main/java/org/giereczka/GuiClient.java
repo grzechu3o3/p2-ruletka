@@ -173,11 +173,13 @@ public class GuiClient extends JFrame {
         String bet = betField.getText().trim();
         String num = numField.getText().trim();
         if(bet.isEmpty() || num.isEmpty()) {
+            updateBet(true);
             error("Nieprawidłowy zakład!");
             return;
         }
         try {
             if (Integer.parseInt(bet) < 0 || Integer.parseInt(num) > 36) {
+                updateBet(true);
                 error("Można postawić tylko na liczbę od 0 do 36!");
                 return;
             }

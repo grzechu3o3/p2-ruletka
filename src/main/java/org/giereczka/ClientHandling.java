@@ -36,8 +36,13 @@ public class ClientHandling implements Runnable {
                     break;
                 }
                 if(clientIn.toLowerCase().startsWith("c|")) {
-                    String msg = clientIn.split("\\|")[1];
-                    server.sendMsg("[CHAT] " + player.nick + ":" + msg);
+                    int index = clientIn.toLowerCase().indexOf("c|");
+                    if(index != -1 && index+1 < clientIn.length()) {
+                        String msg = clientIn.substring(index+2).trim();
+                        if(!msg.isEmpty()) {
+                            server.sendMsg("[CHAT] " + player.nick + ":" + msg);
+                        } else continue;
+                    } else continue;
                 }
                 if(clientIn.toUpperCase().startsWith("N") && player == null) {
                     String nickname = clientIn.split("\\|")[1];
