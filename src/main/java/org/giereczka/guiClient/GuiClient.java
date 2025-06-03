@@ -1,12 +1,10 @@
-package org.giereczka;
+package org.giereczka.guiClient;
 
-import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,7 +14,7 @@ public class GuiClient extends JFrame {
     PrintWriter out;
     BufferedReader in;
     private JTextField betField, numField;
-
+    JCheckBox red, black;
     private final JButton play;
     private JTextArea result;
     private JLabel timer, win;
@@ -34,6 +32,8 @@ public class GuiClient extends JFrame {
 
         betField = new JTextField(6);
         numField = new JTextField(6);
+        red = new JCheckBox("Red");
+        black = new JCheckBox("Black");
         play = new JButton("Zagraj");
         play.addActionListener(e-> {
             updateBet(false);
@@ -42,10 +42,13 @@ public class GuiClient extends JFrame {
 
         JPanel inputs = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        inputs.add(new JLabel("Bet(w $):"));
+        inputs.add(new JLabel("Zakład w $:"));
         inputs.add(betField);
         inputs.add(new JLabel("Liczba: "));
         inputs.add(numField);
+        inputs.add(new JLabel("Kolory:"));
+        inputs.add(red);
+        inputs.add(black);
         inputs.add(play);
 
 

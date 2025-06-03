@@ -1,4 +1,4 @@
-package org.giereczka;
+package org.giereczka.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -57,7 +57,7 @@ public class RuletkaServer {
 
         sendMsg("[INFO] Kręcę... zakłady zamknięte");
 
-        int winning_number = 7;
+        int winning_number = random.nextInt(37);
         String result = String.valueOf(winning_number);
         System.out.println("[INFO] Wynik: " + result);
 

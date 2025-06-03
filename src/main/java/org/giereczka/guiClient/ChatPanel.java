@@ -1,4 +1,4 @@
-package org.giereczka;
+package org.giereczka.guiClient;
 
 import javax.swing.*;
 import java.awt.*;

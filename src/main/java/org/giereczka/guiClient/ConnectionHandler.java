@@ -1,4 +1,4 @@
-package org.giereczka;
+package org.giereczka.guiClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
