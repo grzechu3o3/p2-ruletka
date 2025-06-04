@@ -40,7 +40,7 @@ public class RuletkaProtocol {
                     }
                     if(target.equals("red") || target.equals("black")) {
                         gameState = GAME_IN_PROGRESS;
-                        return "[BET] Postawiono " + amount + " na " + target;
+                        return "[BET_SUCCESS]";
                     } else {
                         try {
                             int number = Integer.parseInt(target);

@@ -37,7 +37,7 @@ public class MessageProcessor {
         } else if(msg.startsWith("[RESULT]")) {
             int winning_number = Integer.parseInt(msg.substring("[RESULT]".length()).trim());
             strip.spinRoulette(winning_number);
-        } else if(msg.startsWith("[ERROR}")) {
+        } else if(msg.startsWith("[ERROR]")) {
             enableBet.run();
         } else if(isIgnored(msg)) return;
         else resultArea.append(msg + "\n");
