@@ -40,6 +40,9 @@ public class RuletkaServer {
         if(gameTime != null) gameTime.cancel();
 
         gameTime = new Timer();
+
+        Game();
+
         gameTime.scheduleAtFixedRate(new TimerTask() { // run every ROUND_TIME for ROUND_TIME
             @Override
             public void run() {
@@ -63,19 +66,25 @@ public class RuletkaServer {
 
         sendMsg("[RESULT] "+result);
 
-        for(Player p : players) {
-            if(p.currentBet != null && p.currentBet.equalsIgnoreCase(result)) {
-                p.totalWon++;
-                p.out.println("[WIN] Wygrałeś! ("+p.totalWon+")");
-            } else if(p.currentBet != null) {
-                p.out.println("[LOSE] Niestety przegrałeś!");
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                for(Player p : players) {
+                    if(p.currentBet != null && p.currentBet.equalsIgnoreCase(result)) {
+                        p.totalWon++;
+                        p.out.println("[WIN] Wygrałeś! ("+p.totalWon+")");
+                    } else if(p.currentBet != null) {
+                        p.out.println("[LOSE] Niestety przegrałeś!");
+                    }
+                    p.currentBet = null;
+                    if(p.protocol!=null) p.protocol.resetGame();
+                }
+                sendMsg("[NEW_ROUND] Nowa runda, masz "+(ROUND_TIME/1000) + "s na obstawienie");
+                lastGame = System.currentTimeMillis();
+                gameStarted = false;
             }
-            p.currentBet = null;
-            if(p.protocol!=null) p.protocol.resetGame();
-        }
-        sendMsg("[NEW_ROUND] Nowa runda, masz "+(ROUND_TIME/1000) + "s na obstawienie");
-        lastGame = System.currentTimeMillis();
-        gameStarted = false;
+        }, 9000);
+
     }
 
     public void sendMsg(String msg) {
