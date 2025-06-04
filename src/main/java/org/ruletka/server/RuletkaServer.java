@@ -69,11 +69,24 @@ public class RuletkaServer {
             @Override
             public void run() {
                 for(Player p : players) {
-                    if(p.currentBet != null && p.currentBet.equalsIgnoreCase(result)) {
-                        p.totalWon++;
-                        p.out.println("[WIN] Wygrałeś! ("+p.totalWon+")");
+                    if(p.currentBet != null && p.currentBet.getType()==Bet.Type.NUM && p .currentBet.getNum().equals(winning_number)) {
+                        p.totalWon+=p.currentBet.getAmount();
+                        p.out.println("[WIN] Wygrałeś: " + p.currentBet.getAmount());
+                    } else if(p.currentBet != null && p.currentBet.getType()==Bet.Type.COLOR) {
+                        Set<Integer> reds = Set.of(
+                                1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
+                        );
+                        boolean isRed = reds.contains(winning_number);
+                        if(isRed && p.currentBet.getColor().equalsIgnoreCase("red")
+                        || !isRed && p.currentBet.getColor().equalsIgnoreCase("black")) {
+                            p.totalWon+=p.currentBet.getAmount();
+                            p.out.println("[WIN] Wygrałeś: " + p.currentBet.getAmount());
+                            System.out.println("Wygrana: "+p.nick + " " + p.currentBet.getType());
+                        }
                     } else if(p.currentBet != null) {
                         p.out.println("[LOSE] Niestety przegrałeś!");
+                        p.totalLost+=p.currentBet.getAmount();
+                        System.out.println("Przegrana: "+p.nick + " " + p.currentBet.getType());
                     }
                     p.currentBet = null;
                     if(p.protocol!=null) p.protocol.resetGame();

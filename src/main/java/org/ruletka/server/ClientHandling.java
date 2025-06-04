@@ -55,20 +55,29 @@ public class ClientHandling implements Runnable {
                 } else if(clientIn.toLowerCase().startsWith("b") && player != null) {
                     if(server.isGameStarted()) {
                         out.println("[ERROR] Gra w toku! Poczekaj na nową rundę!");
+                        continue;
                     } else {
                         try {
                             String[] parts = clientIn.split("\\|");
-                            int number = Integer.parseInt(parts[1]);
+
+                            String typeOrNum = parts[1].toLowerCase();
                             int amount = Integer.parseInt(parts[2]);
 
+                            if(typeOrNum.equals("red") || typeOrNum.equals("black")) {
+                                player.placeBet(new Bet(typeOrNum, amount));
+                                out.println("[INFO] Postawiono " + amount + " na " + typeOrNum.toUpperCase() + ". Czekaj na wynik");
+                                continue;
+                            }
+
+                            int number = Integer.parseInt(typeOrNum);
                             if(number < 0 || number > 36) {
                                 out.println("[ERROR] Liczba musi być z zakresu 0-36");
                             } else if (amount<=0) {out.println("[ERROR] Kwota zakładu musi być dodatnia!");}
                             else {
-                                player.currentBet = String.valueOf(number);
+                                player.placeBet(new Bet(number, amount));
                                 out.println("[INFO] Postawiono " + amount + " na " + number + ". Czekaj na wynik");
                             }
-                        } catch (Exception e) {
+                        } catch (NumberFormatException e) {
                             out.println("[ERROR] Nieprawidłowy zakład! Format: B|liczba|kwota");
                         }
                     }

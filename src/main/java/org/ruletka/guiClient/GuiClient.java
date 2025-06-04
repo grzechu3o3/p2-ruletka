@@ -14,7 +14,7 @@ public class GuiClient extends JFrame {
     PrintWriter out;
     BufferedReader in;
     private JTextField betField, numField;
-    JCheckBox red, black;
+    JRadioButton red, black;
     private final JButton play;
     private JTextArea result;
     private JLabel timer;
@@ -22,6 +22,7 @@ public class GuiClient extends JFrame {
     ConnectionHandler conn;
     Soundplayer spin = new Soundplayer("/spin.wav");
     private MessageProcessor mp;
+    private ButtonGroup bg;
 
     public GuiClient() {
         // <editor-fold desc="Elementy gui">
@@ -33,8 +34,8 @@ public class GuiClient extends JFrame {
 
         betField = new JTextField(6);
         numField = new JTextField(6);
-        red = new JCheckBox("Red");
-        black = new JCheckBox("Black");
+        red = new JRadioButton("Red");
+        black = new JRadioButton("Black");
         play = new JButton("Zagraj");
         play.addActionListener(e-> {
             updateBet(false);
@@ -47,6 +48,9 @@ public class GuiClient extends JFrame {
         inputs.add(new JLabel("Liczba: "));
         inputs.add(numField);
         inputs.add(new JLabel("Kolory:"));
+        bg = new ButtonGroup();
+        bg.add(red);
+        bg.add(black);
         inputs.add(red);
         inputs.add(black);
         inputs.add(play);
@@ -125,7 +129,7 @@ public class GuiClient extends JFrame {
         }
     }
 
-    private static final List<String> ignored_prefixList = Arrays.asList("[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]");
+    private static final List<String> ignored_prefixList = Arrays.asList("[TIMER]");
 
     private void updateBet(boolean state) {
         SwingUtilities.invokeLater(()->{
@@ -138,16 +142,42 @@ public class GuiClient extends JFrame {
     public void bet() {
         String bet = betField.getText().trim();
         String num = numField.getText().trim();
+        boolean isRed = red.isSelected();
+        boolean isBlack = black.isSelected();
 
-        if(!Validator.isValidBet(bet,num)) {
+        if(!Validator.isPositive(bet)) {
             updateBet(true);
-            error("Nieprawidłowy zakład! Liczba musi być od 0 do 36, kwota większa od zera");
+            error("Nieprawidłowa kwota zakładu!");
             return;
         }
 
-        conn.send("b|"+num+"|"+bet);
+        if(!num.isEmpty() && (isRed || isBlack)) {
+            updateBet(true);
+            error("Nie można obstawiać liczby i koloru jednocześnie!");
+            return;
+        }
+
+        if(num.isEmpty() && !isRed && !isBlack) {
+            updateBet(true);
+            error("Nie wprowadzono liczby lub nie wybrano koloru!");
+            return;
+        }
+
+        if(!num.isEmpty()) {
+            if(!Validator.isValidBet(num)) {
+                updateBet(true);
+                error("Nieprawidłowa liczba! Zakres 0-36");
+                return;
+            }
+            conn.send("b|" + num + "|" + bet);
+        } else {
+            String color = isRed ? "red" : "black";
+            conn.send("b|" + color + "|" + bet);
+        }
+
         betField.setText("");
         numField.setText("");
+        bg.clearSelection();
     }
 
     public void error(String msg) {
