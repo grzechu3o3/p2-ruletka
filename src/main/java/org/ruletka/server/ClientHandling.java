@@ -55,7 +55,7 @@ public class ClientHandling implements Runnable {
                 } else if(clientIn.toLowerCase().startsWith("b") && player != null) {
                     if(server.isGameStarted()) {
                         out.println("[ERROR] Gra w toku! Poczekaj na nową rundę!");
-                        return;
+                        continue;
                     } else {
                         try {
                             String[] parts = clientIn.split("\\|");
@@ -66,7 +66,7 @@ public class ClientHandling implements Runnable {
                             if(typeOrNum.equals("red") || typeOrNum.equals("black")) {
                                 player.placeBet(new Bet(typeOrNum, amount));
                                 out.println("[INFO] Postawiono " + amount + " na " + typeOrNum.toUpperCase() + ". Czekaj na wynik");
-                                return;
+                                continue;
                             }
 
                             int number = Integer.parseInt(typeOrNum);

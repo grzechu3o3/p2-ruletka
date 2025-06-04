@@ -177,7 +177,6 @@ public class GuiClient extends JFrame {
             conn.send("b|" + color + "|" + bet);
         }
 
-        conn.send("b|"+num+"|"+bet);
         betField.setText("");
         numField.setText("");
         bg.clearSelection();
