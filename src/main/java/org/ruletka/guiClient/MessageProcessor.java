@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.util.List;
 
 public class MessageProcessor {
-    private JLabel timerLabel, winLabel;
+    private JLabel timerLabel;
     private JTextArea resultArea;
     private ChatPanel chatPanel;
     private JButton playButton;
@@ -13,9 +13,8 @@ public class MessageProcessor {
     private Runnable enableBet;
     private RouletteStrip strip;
 
-    public MessageProcessor(JLabel timer, JLabel win, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet, RouletteStrip strip) {
+    public MessageProcessor(JLabel timer, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet, RouletteStrip strip) {
         this.timerLabel = timer;
-        this.winLabel = win;
         this.resultArea = res;
         this.chatPanel = chat;
         this.playButton = play;
@@ -30,8 +29,11 @@ public class MessageProcessor {
             handleTimer(msg);
         } else if(msg.startsWith("[CHAT]")) {
             handleChat(msg);
-        } else if(msg.startsWith("[WIN]")) winLabel.setText("Wygrana!");
-        else if(msg.startsWith("[LOSE]")) winLabel.setText("Przegrałeś :(");
+        } else if(msg.startsWith("[WIN]")) {
+            JOptionPane.showMessageDialog(chatPanel, msg, "Wygrana", JOptionPane.INFORMATION_MESSAGE);
+        } else if(msg.startsWith("[LOSE]")) {
+            JOptionPane.showMessageDialog(chatPanel, msg, "Przegrana", JOptionPane.INFORMATION_MESSAGE);
+        }
         else if(msg.startsWith("[NEW_ROUND]")) {
             handleNewRound();
         } else if(msg.startsWith("[RESULT]")) {

@@ -41,8 +41,7 @@ public class RuletkaServer {
 
         gameTime = new Timer();
 
-        Game();
-
+        gameStarted = false;
         gameTime.scheduleAtFixedRate(new TimerTask() { // run every ROUND_TIME for ROUND_TIME
             @Override
             public void run() {
@@ -58,7 +57,7 @@ public class RuletkaServer {
         gameStarted = true;
         System.out.println("[INFO] Runda rozpoczęta!");
 
-        sendMsg("[INFO] Kręcę... zakłady zamknięte");
+        sendMsg("[INFO] Kręcę...");
 
         int winning_number = random.nextInt(37);
         String result = String.valueOf(winning_number);
