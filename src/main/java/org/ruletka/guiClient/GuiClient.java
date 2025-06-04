@@ -59,10 +59,11 @@ public class GuiClient extends JFrame {
         info.add(timer = new JLabel("Czas do końca rundy: -- s"));
         info.add(win = new JLabel("Wygrane: 0"));
 
-
+        RouletteStrip strip = new RouletteStrip();
         result.setFont(new Font("Arial", Font.PLAIN, 12));
         JPanel results = new JPanel();
         results.setLayout(new BoxLayout(results, BoxLayout.Y_AXIS));
+        results.add(strip);
 
         add(inputs, BorderLayout.SOUTH);
         results.add(new JScrollPane(result));
@@ -97,7 +98,7 @@ public class GuiClient extends JFrame {
         chatPanel = new ChatPanel(out);
         add(chatPanel, BorderLayout.WEST);
 
-        mp = new MessageProcessor(timer, win, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true));
+        mp = new MessageProcessor(timer, win, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true), strip);
 
         addWindowListener(new WindowAdapter() {
             @Override

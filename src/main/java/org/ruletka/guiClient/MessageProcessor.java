@@ -11,8 +11,9 @@ public class MessageProcessor {
     private Soundplayer spinSound;
     private List<String> ignoredPrefixes;
     private Runnable enableBet;
+    private RouletteStrip strip;
 
-    public MessageProcessor(JLabel timer, JLabel win, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet) {
+    public MessageProcessor(JLabel timer, JLabel win, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet, RouletteStrip strip) {
         this.timerLabel = timer;
         this.winLabel = win;
         this.resultArea = res;
@@ -21,6 +22,7 @@ public class MessageProcessor {
         this.spinSound = spin;
         this.ignoredPrefixes = ignored;
         this.enableBet = enableBet;
+        this.strip = strip;
     }
 
     public void process(String msg) {
@@ -34,6 +36,7 @@ public class MessageProcessor {
             handleNewRound();
         } else if(msg.startsWith("[RESULT]")) {
             int winning_number = Integer.parseInt(msg.substring("[RESULT]".length()).trim());
+            strip.spinRoulette(winning_number);
         } else if(isIgnored(msg)) return;
         else resultArea.append(msg + "\n");
 
