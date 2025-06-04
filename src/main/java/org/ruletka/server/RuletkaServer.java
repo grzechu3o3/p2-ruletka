@@ -91,12 +91,10 @@ public class RuletkaServer {
                         || !isRed && p.currentBet.getColor().equalsIgnoreCase("black")) {
                             p.totalWon+=p.currentBet.getAmount();
                             p.out.println("[WIN] Wygrałeś: " + p.currentBet.getAmount());
-                            System.out.println("Wygrana: "+p.nick + " " + p.currentBet.getType());
                         }
                     } else if(p.currentBet != null) {
                         p.out.println("[LOSE] Niestety przegrałeś!");
                         p.totalLost+=p.currentBet.getAmount();
-                        System.out.println("Przegrana: "+p.nick + " " + p.currentBet.getType());
                     }
                     p.currentBet = null;
                     if(p.protocol!=null) p.protocol.resetGame();
@@ -141,7 +139,7 @@ public class RuletkaServer {
         }, 0, 1000);
     }
 
-
+    
     public static void main(String[] args) throws IOException {
         new RuletkaServer().start();
     }
