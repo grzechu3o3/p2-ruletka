@@ -48,9 +48,7 @@ public class RouletteStrip extends JPanel {
                 long timeElapsed = System.currentTimeMillis() - startTime;
 
                 label.setText(String.valueOf(numbers.get(index)));
-                if(numbers.get(index) == 0) label.setForeground( Color.GREEN.darker());
-                else if(reds.contains(numbers.get(index))) label.setForeground(Color.RED);
-                else label.setForeground(Color.BLACK);
+                setColor(numbers.get(index));
 
                 index = (index + 1) % numbers.size();
 
@@ -64,11 +62,16 @@ public class RouletteStrip extends JPanel {
                     int finalIndex = numbers.indexOf(winningNumber);
                     if(finalIndex != -1) {
                         label.setText(String.valueOf(numbers.get(finalIndex)));
+                        setColor(finalIndex);
                     } else label.setText("?");
                 }
             }
         });
         timer.start();
     }
-
+    private void setColor(int number) {
+        if(number == 0) label.setForeground(Color.GREEN.darker());
+        else if(reds.contains(number)) label.setForeground(Color.RED);
+        else label.setForeground(Color.BLACK);
+    }
 }
