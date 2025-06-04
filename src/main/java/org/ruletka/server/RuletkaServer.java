@@ -48,7 +48,7 @@ public class RuletkaServer {
             public void run() {
                 Game();
             }
-        }, ROUND_TIME, ROUND_TIME);
+        }, 20*1000, ROUND_TIME);
 
         lastGame = System.currentTimeMillis();
         System.out.println("[INFO] Gra rozpoczęta, czas między rundami " + ROUND_TIME / 1000 + "s");
