@@ -54,6 +54,16 @@ public class RuletkaServer {
     }
 
     private void Game() {
+        synchronized(players) {
+            if(players.isEmpty()) {
+                System.out.println("[INFO] Brak graczy, gra nie zostanie rozpoczęta");
+                gameStarted = false;
+                lastGame = 0;
+                sendMsg("[INFO] Brak graczy - wstrzymano rundę");
+                return;
+            }
+        }
+
         gameStarted = true;
         System.out.println("[INFO] Runda rozpoczęta!");
 
@@ -125,8 +135,8 @@ public class RuletkaServer {
         roundTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                String time = "[TIMER] " + getTime();
-                sendMsg(time);
+                    String time = "[TIMER] " + getTime();
+                    sendMsg(time);
             }
         }, 0, 1000);
     }
