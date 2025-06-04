@@ -17,7 +17,7 @@ public class GuiClient extends JFrame {
     JCheckBox red, black;
     private final JButton play;
     private JTextArea result;
-    private JLabel timer, win;
+    private JLabel timer;
     private ChatPanel chatPanel;
     ConnectionHandler conn;
     Soundplayer spin = new Soundplayer("/spin.wav");
@@ -57,7 +57,6 @@ public class GuiClient extends JFrame {
 
         JPanel info = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 10));
         info.add(timer = new JLabel("Czas do końca rundy: -- s"));
-        info.add(win = new JLabel("Wygrane: 0"));
 
         RouletteStrip strip = new RouletteStrip();
         result.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -98,7 +97,7 @@ public class GuiClient extends JFrame {
         chatPanel = new ChatPanel(out);
         add(chatPanel, BorderLayout.WEST);
 
-        mp = new MessageProcessor(timer, win, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true), strip);
+        mp = new MessageProcessor(timer, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true), strip);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -116,7 +115,6 @@ public class GuiClient extends JFrame {
 
     private void listen() {
         try {
-            win.setText("Wygrane: 0");
             String l;
             while((l = conn.read()) != null) {
                 final String msg = l;
