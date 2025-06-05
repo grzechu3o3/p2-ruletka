@@ -58,7 +58,6 @@ public class RuletkaServer {
             if(players.isEmpty()) {
                 System.out.println("[INFO] Brak graczy, gra nie zostanie rozpoczęta");
                 gameStarted = false;
-                lastGame = 0;
                 sendMsg("[INFO] Brak graczy - wstrzymano rundę");
                 return;
             }

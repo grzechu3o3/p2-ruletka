@@ -2,6 +2,7 @@ package org.ruletka.guiClient;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.TimerTask;
 
 public class MessageProcessor {
     private JLabel timerLabel;
@@ -12,8 +13,9 @@ public class MessageProcessor {
     private List<String> ignoredPrefixes;
     private Runnable enableBet;
     private RouletteStrip strip;
+    LastWin lw;
 
-    public MessageProcessor(JLabel timer, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet, RouletteStrip strip) {
+    public MessageProcessor(JLabel timer, JTextArea res, ChatPanel chat, JButton play, Soundplayer spin, List<String> ignored, Runnable enableBet, RouletteStrip strip, LastWin lastWin) {
         this.timerLabel = timer;
         this.resultArea = res;
         this.chatPanel = chat;
@@ -22,6 +24,7 @@ public class MessageProcessor {
         this.ignoredPrefixes = ignored;
         this.enableBet = enableBet;
         this.strip = strip;
+        this.lw = lastWin;
     }
 
     public void process(String msg) {
@@ -39,6 +42,7 @@ public class MessageProcessor {
         } else if(msg.startsWith("[RESULT]")) {
             int winning_number = Integer.parseInt(msg.substring("[RESULT]".length()).trim());
             strip.spinRoulette(winning_number);
+            lw.addWin(winning_number);
         } else if(msg.startsWith("[ERROR]")) {
             enableBet.run();
         } else if(isIgnored(msg)) return;

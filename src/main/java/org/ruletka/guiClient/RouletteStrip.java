@@ -63,7 +63,7 @@ public class RouletteStrip extends JPanel {
                     int finalIndex = numbers.indexOf(winningNumber);
                     if(finalIndex != -1) {
                         label.setText(String.valueOf(numbers.get(finalIndex)));
-                        setColor(finalIndex);
+                        setColor(numbers.get(finalIndex));
                     } else label.setText("?");
                 }
             }

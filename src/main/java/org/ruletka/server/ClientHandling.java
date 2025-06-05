@@ -65,7 +65,7 @@ public class ClientHandling implements Runnable {
 
                             if(typeOrNum.equals("red") || typeOrNum.equals("black")) {
                                 player.placeBet(new Bet(typeOrNum, amount));
-                                out.println("[INFO] Postawiono " + amount + " na " + typeOrNum.toUpperCase() + ". Czekaj na wynik");
+                                out.println("[BET] Postawiono " + amount + " na " + typeOrNum.toUpperCase() + ". Czekaj na wynik");
                                 continue;
                             }
 
@@ -75,7 +75,7 @@ public class ClientHandling implements Runnable {
                             } else if (amount<=0) {out.println("[ERROR] Kwota zakładu musi być dodatnia!");}
                             else {
                                 player.placeBet(new Bet(number, amount));
-                                out.println("[INFO] Postawiono " + amount + " na " + number + ". Czekaj na wynik");
+                                out.println("[BET] Postawiono " + amount + " na " + number + ". Czekaj na wynik");
                             }
                         } catch (NumberFormatException e) {
                             out.println("[ERROR] Nieprawidłowy zakład! Format: B|liczba|kwota");

@@ -23,6 +23,7 @@ public class GuiClient extends JFrame {
     Soundplayer spin = new Soundplayer("/spin.wav");
     private MessageProcessor mp;
     private ButtonGroup bg;
+    LastWin lw;
 
     public GuiClient() {
         // <editor-fold desc="Elementy gui">
@@ -54,6 +55,8 @@ public class GuiClient extends JFrame {
         inputs.add(red);
         inputs.add(black);
         inputs.add(play);
+        lw = new LastWin();
+        inputs.add(lw);
 
         result = new JTextArea(4,40);
         result.setEditable(false);
@@ -101,7 +104,7 @@ public class GuiClient extends JFrame {
         chatPanel = new ChatPanel(out);
         add(chatPanel, BorderLayout.WEST);
 
-        mp = new MessageProcessor(timer, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true), strip);
+        mp = new MessageProcessor(timer, result, chatPanel, play, spin, ignored_prefixList, () -> updateBet(true), strip, lw);
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -129,8 +132,7 @@ public class GuiClient extends JFrame {
         }
     }
 
-    private static final List<String> ignored_prefixList = Arrays.asList("[TIMER]");
-
+    private static final List<String> ignored_prefixList = Arrays.asList("[TIMER]", "[RESULT]", "[CHAT", "c", "[INFO]", "[NEW_ROUND]");
     private void updateBet(boolean state) {
         SwingUtilities.invokeLater(()->{
             play.setEnabled(state);
