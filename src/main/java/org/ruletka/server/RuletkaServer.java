@@ -24,6 +24,11 @@ public class RuletkaServer {
             }
         }
     }
+    public void unregister(Player player) {
+        synchronized (players) {
+            players.remove(player);
+        }
+    }
 
     public void start() throws IOException {
         ServerSocket server = new ServerSocket(port);

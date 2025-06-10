@@ -93,7 +93,7 @@ public class ClientHandling implements Runnable {
         } finally {
             try {
                 System.out.println("[INFO] Client disconnected from "+client.getInetAddress());
-                if(player != null) synchronized (server.players) {server.players.remove(player);}
+                server.unregister(player);
                 if(client != null && !client.isClosed()) client.close();
                 if(in != null)  in.close();
                 if(out != null) out.close();
