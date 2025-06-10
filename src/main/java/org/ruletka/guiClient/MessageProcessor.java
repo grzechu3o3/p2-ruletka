@@ -33,9 +33,9 @@ public class MessageProcessor {
         } else if(msg.startsWith("[CHAT]")) {
             handleChat(msg);
         } else if(msg.startsWith("[WIN]")) {
-            JOptionPane.showMessageDialog(chatPanel, msg, "Wygrana", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, msg, "Wygrana", JOptionPane.INFORMATION_MESSAGE);
         } else if(msg.startsWith("[LOSE]")) {
-            JOptionPane.showMessageDialog(chatPanel, msg, "Przegrana", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, msg, "Przegrana", JOptionPane.INFORMATION_MESSAGE);
         }
         else if(msg.startsWith("[NEW_ROUND]")) {
             handleNewRound();
