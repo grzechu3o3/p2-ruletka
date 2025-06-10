@@ -20,7 +20,7 @@ public class RuletkaServer {
             players.add(player);
             if(players.size() == 1 && !gameStarted) {
                 System.out.println("[INFO] Dołączył pierwszy gracz - rozpoczynam grę");
-                lastGame = System.currentTimeMillis();
+                startGame();
             }
         }
     }
@@ -30,7 +30,7 @@ public class RuletkaServer {
         System.out.println("[INFO] Server listening on port " + port);
 
         timerBroadcast();
-        startGame();
+        //startGame();
 
         while(true) {
             Socket client = server.accept();
@@ -52,7 +52,7 @@ public class RuletkaServer {
             public void run() {
                 Game();
             }
-        }, 20*1000, ROUND_TIME);
+        },20*1000, ROUND_TIME);
 
         lastGame = System.currentTimeMillis();
         System.out.println("[INFO] Probuje rozpoczac gre, czas między rundami " + ROUND_TIME / 1000 + "s");
@@ -69,7 +69,7 @@ public class RuletkaServer {
                     public void run() {
                         Game();
                     }
-                }, 5000);
+                }, 1000);
                 return;
             }
         }
@@ -91,7 +91,7 @@ public class RuletkaServer {
                 for(Player p : players) {
                     if(p.currentBet != null && p.currentBet.getType()==Bet.Type.NUM && p .currentBet.getNum().equals(winning_number)) {
                         p.totalWon+=p.currentBet.getAmount();
-                        p.out.println("[WIN] Wygrałeś: " + p.currentBet.getAmount());
+                        p.out.println("[WIN] Wygrałeś: " + 35*p.currentBet.getAmount());
                     } else if(p.currentBet != null && p.currentBet.getType()==Bet.Type.COLOR) {
                         Set<Integer> reds = Set.of(
                                 1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36
