@@ -16,9 +16,14 @@ public class RuletkaServer {
     private Timer roundTimer;
 
     public void register(Player player) {
-        players.add(player);
+        synchronized (players) {
+            players.add(player);
+            if(players.size() == 1 && !gameStarted) {
+                System.out.println("[INFO] Dołączył pierwszy gracz - rozpoczynam grę");
+                lastGame = System.currentTimeMillis();
+            }
+        }
     }
-
 
     public void start() throws IOException {
         ServerSocket server = new ServerSocket(port);
@@ -50,7 +55,7 @@ public class RuletkaServer {
         }, 20*1000, ROUND_TIME);
 
         lastGame = System.currentTimeMillis();
-        System.out.println("[INFO] Gra rozpoczęta, czas między rundami " + ROUND_TIME / 1000 + "s");
+        System.out.println("[INFO] Probuje rozpoczac gre, czas między rundami " + ROUND_TIME / 1000 + "s");
     }
 
     private void Game() {
@@ -59,6 +64,12 @@ public class RuletkaServer {
                 System.out.println("[INFO] Brak graczy, gra nie zostanie rozpoczęta");
                 gameStarted = false;
                 sendMsg("[INFO] Brak graczy - wstrzymano rundę");
+                new Timer().schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        Game();
+                    }
+                }, 5000);
                 return;
             }
         }

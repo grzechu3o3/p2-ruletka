@@ -31,10 +31,16 @@ public class ChatPanel extends JPanel {
         add(chatInput, BorderLayout.NORTH);
         add(sendButton, BorderLayout.SOUTH);
 
-        sendButton.addActionListener(e->{
-            output.println("c|"+chatInput.getText());
-            chatInput.setText("");
+        chatInput.addActionListener(e -> {
+            sendMsg(chatInput.getText());
         });
+        sendButton.addActionListener(e->{
+            sendMsg(chatInput.getText());
+        });
+    }
+    public void sendMsg(String msg){
+        output.println("c|"+msg);
+        chatInput.setText("");
     }
     public void append(String nick, String msg)
     {

@@ -13,17 +13,18 @@ public class GuiClient extends JFrame {
     static int port = 666;
     PrintWriter out;
     BufferedReader in;
-    private JTextField betField, numField;
-    JRadioButton red, black;
-    private final JButton play;
-    private JTextArea result;
-    private JLabel timer;
-    private ChatPanel chatPanel;
     ConnectionHandler conn;
-    Soundplayer spin = new Soundplayer("/spin.wav");
-    private MessageProcessor mp;
-    private ButtonGroup bg;
+
+    private JTextField betField, numField; // zaklad i liczba
+    JRadioButton red, black; // stawianie na kolor
+    private final JButton play; // zatwierdzenie zakladu
+    private JTextArea result; // odpwoiedzi serwera
+    private JLabel timer; // czas rundy
+    private ChatPanel chatPanel; // panel na czat
+    private MessageProcessor mp; // przetwarzanie odpowiedzi serwera
+    private ButtonGroup bg; // grupa na przyciski
     LastWin lw;
+    Soundplayer spin = new Soundplayer("/spin.wav");
 
     public GuiClient() {
         // <editor-fold desc="Elementy gui">
@@ -98,7 +99,8 @@ public class GuiClient extends JFrame {
             }
             new Thread(this::listen).start();
         } catch (IOException e) {
-            e.printStackTrace();
+            error("Nie mozna nawiązać połączenia z serwerem!");
+            System.exit(1);
         }
 
         chatPanel = new ChatPanel(out);
@@ -156,6 +158,7 @@ public class GuiClient extends JFrame {
         if(!num.isEmpty() && (isRed || isBlack)) {
             updateBet(true);
             error("Nie można obstawiać liczby i koloru jednocześnie!");
+            bg.clearSelection();
             return;
         }
 
